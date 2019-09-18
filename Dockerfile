@@ -17,9 +17,9 @@ COPY --chown=node:node ./client/public ./client/public
 
 USER node
 
-RUN chmod u+x ./app/external/scripts/*.sh
-
 RUN npm install
+
+VOLUME /media
 
 EXPOSE 1337:1337 1338:1338
 

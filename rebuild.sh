@@ -9,4 +9,4 @@ docker rm $(docker ps -aq)
 echo "===== Rebuilding image... ====="
 docker build -t amoore1337/demo-image .
 echo "===== Starting container... ====="
-docker run --name demo-image -p 1337:1337 -p 1338:1338 amoore1337/demo-image
+docker run --name demo-image -p 1337:1337 -p 1338:1338 -v /Users/amoore/Downloads:/media amoore1337/demo-image
