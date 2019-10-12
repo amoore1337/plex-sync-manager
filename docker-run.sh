@@ -2,7 +2,7 @@
 
 # Remember to make script executable: chmod u+x docker-run.sh
 # Builds and runs docker images
-# NOTE: Add the "--full" flag to also build prod assets
+# NOTE: Add the "--no-compile" flag to prevent compiling client assets
 
 if [ "$1" != "--no-compile" ]; then
   echo "===== Build client assets... ====="
