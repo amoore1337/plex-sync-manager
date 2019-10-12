@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# Remember to make script executable: chmod u+x rebuild.sh
+# Remember to make script executable: chmod u+x docker-run.sh
+# Builds and runs docker images
+# NOTE: Add the "--full" flag to also build prod assets
+
+if [ "$1" != "--no-compile" ]; then
+  echo "===== Build client assets... ====="
+  cd ./client && npm install && npm run build && cd -
+fi
 
 echo "===== Stopping all containers... ====="
 docker stop $(docker ps -aq)

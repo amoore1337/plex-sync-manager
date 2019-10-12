@@ -1,10 +1,11 @@
 {
   "name": "plex-cache",
-  "version": "1.0.0",
-  "description": "A local plex caching tool",
+  "version": "0.0.1",
+  "description": "A Plex library sync manager",
   "scripts": {
     "start": "pm2 start index-internal.js index-external.js && pm2 log",
     "stop": "pm2 stop all",
+    "stat": "pm2 status",
     "start:internal": "nodemon index-internal.js",
     "start:external": "nodemon index-external.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,6 +27,7 @@
     "nodemon": "^1.19.1",
     "pem": "^1.14.2",
     "pm2": "^3.5.1",
+    "pump": "^3.0.0",
     "require-dir": "^1.2.0",
     "winston": "^3.2.1"
   }

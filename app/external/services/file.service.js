@@ -1,6 +1,7 @@
 const compressing = require('compressing');
 const fs = require('fs');
 const path = require('path');
+const pump = require('pump');
 const config = require('nconf');
 const logger = require('winston');
 
@@ -11,12 +12,14 @@ exports.compressDir = function (inputPath) {
   if (!MEDIA_DIR) { MEDIA_DIR = initPath(config.get('MEDIA_DIR') || '/media'); }
   if (!PACKAGING_DIR) { PACKAGING_DIR = initPath(config.get('PACKAGING_DIR') || '/packaging'); }
 
-  return compressing.tgz.compressDir(mediaPath(inputPath), packagingPath(inputPath));
-}
+  const compressStream = new compressing.tgz.Stream();
+  compressStream.addEntry(mediaPath(inputPath));
+  const destStream = fs.createWriteStream(packagingPath(inputPath));
 
-exports.decompressDir = function (dirPath, outputPath) {
-  console.log(dirPath);
-  return compressing.tgz.uncompress(dirPath, outputPath);
+  // return compressing.tgz.compressDir(mediaPath(inputPath), packagingPath(inputPath));
+  return new Promise((resolve, reject) => {
+    pump(compressStream, destStream, (err) => { if (!err) { resolve(); } else { reject(err); } });
+  })
 }
 
 exports.packagingPath = packagingPath;
