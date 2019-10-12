@@ -39,7 +39,7 @@ This app uses a monolithic structure to house both the frontend and backend apps
 
 Checkout the repo:
 ```sh
-> git clone <repo_path_goes_here>
+> git clone git@github.com:amoore1337/plex-sync-manager.git
 ```
 
 ### Backend setup:
