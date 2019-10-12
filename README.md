@@ -8,10 +8,10 @@ Plex Cache Manager
 
 ***The goal behind this Plex sync manager is to allow friends and family to share your Plex content while not compromising the performance and security benefits you enjoy from your own local Plex server.***
 
-To accomplish the goal above, this project will implement the following flow:
-1. The content owner will install the sync manager on the same environment as their Plex server (aka the "master" instance)
-2. Users who wish to share this library must install the client app (coming soon) alongside their own local Plex server instance.
-3. After authenticating/authorizing with the sync manager (aka this app), the client will be able to search, download, and subscribe to content from the "master" Plex instance.
+Planned flow for library sync:
+1. Content owner installs the sync manager on the same environment as their Plex server ("master" instance).
+2. Users who wish to sync with "master" instance must install the client app (coming soon) alongside their own local Plex instance.
+3. After authenticating/authorizing with the sync manager (this app), the client will be able to search, download, and subscribe to content from the "master" Plex instance.
 
 ---
 
@@ -19,7 +19,7 @@ To accomplish the goal above, this project will implement the following flow:
 
 1. Implements OAuth2 to allow for authentication/authorization of clients.
 2. Exposes API for clients to facilitate checking out content from the "master" Plex server.
-    * Communication will remain encrypted over SSL
+    * Communication will remain encrypted over SSL.
 3. Allows control over what content clients are allowed to see and download.
 4. Displays detail logs over what content clients are requesting/have downloaded.
 5. Allows revoking of clients and IP blocking.
@@ -72,7 +72,7 @@ Checkout the repo:
     > npm run serve
     ```
 
-> NOTE: See the Readme under `./client` for more instructions and options
+> NOTE: See the Readme under `./client` for more instructions and options.
 
 ---
 
