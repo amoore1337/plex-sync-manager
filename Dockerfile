@@ -8,7 +8,7 @@ WORKDIR /home/node/app
 
 COPY --chown=node:node ./app ./app
 COPY --chown=node:node ./config ./config
-COPY --chown=node:node ./.env ./
+COPY --chown=node:node ./.docker_env ./.env
 COPY --chown=node:node ./index-*.js ./
 COPY --chown=node:node ./package*.json ./
 
@@ -19,7 +19,8 @@ USER node
 
 RUN npm install
 
-VOLUME /media
+VOLUME /tv_shows
+VOLUME /movies
 
 EXPOSE 1337:1337 1338:1338
 

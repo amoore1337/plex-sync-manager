@@ -1,9 +1,9 @@
-NODE_ENV=dev
+NODE_ENV=prod
 
 NODE_PORT_INTERNAL=1337
 NODE_PORT_EXTERNAL=1338
 NODE_KEY=config/key.pem
 NODE_CERT=config/cert.pem
 
-TV_DIR=/media/tv_shows
-MOVIE_DIR=/media/movies
+TV_DIR=/tv_shows
+MOVIE_DIR=/movies
