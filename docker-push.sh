@@ -10,6 +10,6 @@ docker stop $(docker ps -aq)
 echo "===== Removing existing stopped containers... ====="
 docker rm $(docker ps -aq)
 echo "===== Building new test image... ====="
-docker build -t amoore1337/plex-cache-manager:test .
+docker build -t amoore1337/plex-cache-manager:test2 .
 echo "===== Pushing to docker hub... ====="
-docker push amoore1337/plex-cache-manager:test
+docker push amoore1337/plex-cache-manager:test2

@@ -24,6 +24,7 @@ exports.compressMovie = function (inputPath) {
     }
   }
 
+  logger.info('**** compress path:', moviePath(inputPath));
   const compressStream = new compressing.tgz.Stream();
   compressStream.addEntry(moviePath(inputPath));
   const destStream = fs.createWriteStream(packagingPath(inputPath));
