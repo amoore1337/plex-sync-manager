@@ -10,7 +10,6 @@ const {
 module.exports = (router) => {
   router.get('/movies/:id', wrapAsync(async (req, res) => {
     const filePath = getPathFromHash(req.params.id);
-    console.log('filePath: ', filePath);
     if (!filePath) {
       return res.satus(404).send('Invalid identifier');
     }

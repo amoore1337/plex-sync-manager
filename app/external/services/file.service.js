@@ -53,12 +53,11 @@ exports.removePackagedFile = function(inputPath) {
 }
 
 exports.getExistingMoviesMap = function() {
-  console.log('getting...');
-  return mapDir(getMovieDir(), { extensions: /\.(mp4|mkv|avi)$/g });
+  return mapDir(getMovieDir(), { extensions: /\.(mp4|mkv|avi)$/g, basePath: getMovieDir() });
 }
 
 exports.getExistingTvShowsMap = function() {
-  return mapDir(getTvDir(), { extensions: /\.(mp4|mkv|avi)$/g });
+  return mapDir(getTvDir(), { extensions: /\.(mp4|mkv|avi)$/g, basePath: getTvDir() });
 }
 
 exports.packagingPath = packagingPath;
@@ -142,8 +141,9 @@ function mapDir(dirPath, options = {}) {
         continue;
       }
 
+      const id = options.basePath ? filePathToHash(path.relative(options.basePath, filePath)) : filePathToHash(filePath);
       const details = {
-        id: filePathToHash(path.relative(getMovieDir(), filePath)),
+        id,
         name: files[i],
         isDir: stats.isDirectory(),
         size: stats.size,
