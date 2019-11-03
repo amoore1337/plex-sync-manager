@@ -33,4 +33,4 @@ winston.add(logger);
 logger.info('[APP] Starting server initialization');
 
 // Initialize Service:
-initKeys().then(() => server())
+initKeys().then(() => server());

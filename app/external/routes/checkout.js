@@ -1,9 +1,19 @@
 const { wrapAsync } = require('../../services/router.service');
-const { compressMovie, compressTvShow, packagingPath, removePackagedFile } = require('../services/file.service');
+const {
+  compressMovie,
+  compressTvShow,
+  packagingPath,
+  removePackagedFile,
+  getPathFromHash,
+} = require('../services/file.service');
 
 module.exports = (router) => {
-  router.get('/movies', wrapAsync(async (req, res) => {
-    const filePath = decodeURIComponent(req.query.file);
+  router.get('/movies/:id', wrapAsync(async (req, res) => {
+    const filePath = getPathFromHash(req.params.id);
+    console.log('filePath: ', filePath);
+    if (!filePath) {
+      return res.satus(404).send('Invalid identifier');
+    }
     compressMovie(decodeURIComponent(filePath)).then(
       () => res.sendFile(packagingPath(filePath), {}, (err) => {
         if (!err) { removePackagedFile(filePath); }
@@ -12,7 +22,10 @@ module.exports = (router) => {
   }));
 
   router.get('/shows', wrapAsync(async (req, res) => {
-    const filePath = decodeURIComponent(req.query.file);
+    const filePath = getPathFromHash(req.params.id);
+    if (!filePath) {
+      return res.satus(404).send('Invalid identifier');
+    }
     compressTvShow(decodeURIComponent(filePath)).then(
       () => res.sendFile(packagingPath(filePath), {}, (err) => {
         if (!err) { removePackagedFile(filePath); }

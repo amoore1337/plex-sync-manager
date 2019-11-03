@@ -4,27 +4,24 @@ const path = require('path');
 const pump = require('pump');
 const config = require('nconf');
 const logger = require('winston');
+const { promisify } = require('util');
+const { encode } = require('url-safe-base64');
+const { sumBy } = require('lodash');
+
+const readDirAsync = promisify(fs.readdir);
 
 let MOVIE_DIR;
 let TV_DIR;
 let PACKAGING_DIR;
 
 exports.compressMovie = function (inputPath) {
-  if (!MOVIE_DIR) { MOVIE_DIR = config.get('MOVIE_DIR') || '/movies'; }
-  if (!PACKAGING_DIR) { PACKAGING_DIR = initPackagingPath(); }
-
-  if (!fs.existsSync(MOVIE_DIR)) {
-    // Try looking in relative path
-    if (fs.existsSync(`.${MOVIE_DIR}`)) {
-      MOVIE_DIR = `.${MOVIE_DIR}`
-    } else {
-      const err = new Error('Movie directory does not exist.');
-      err.httpCode = 404;
-      return Promise.reject(err);
-    }
+  // Verify dir is configured before trying to zip
+  if (!getMovieDir()) {
+    const err = new Error('Movie directory does not exist.');
+    err.httpCode = 404;
+    return Promise.reject(err);
   }
 
-  logger.info('**** compress path:', moviePath(inputPath));
   const compressStream = new compressing.tgz.Stream();
   compressStream.addEntry(moviePath(inputPath));
   const destStream = fs.createWriteStream(packagingPath(inputPath));
@@ -35,18 +32,11 @@ exports.compressMovie = function (inputPath) {
 }
 
 exports.compressTvShow = function (inputPath) {
-  if (!TV_DIR) { TV_DIR = config.get('TV_DIR') || '/tv_shows'; }
-  if (!PACKAGING_DIR) { PACKAGING_DIR = initPackagingPath(); }
-
-  if (!fs.existsSync(TV_DIR)) {
-    // Try looking in relative path
-    if (fs.existsSync(`.${TV_DIR}`)) {
-      TV_DIR = `.${TV_DIR}`
-    } else {
-      const err = new Error('TV directory does not exist.');
-      err.httpCode = 404;
-      return Promise.reject(err);
-    }
+  // Verify dir is configured before trying to zip
+  if (!getTvDir()) {
+    const err = new Error('TV directory does not exist.');
+    err.httpCode = 404;
+    return Promise.reject(err);
   }
 
   const compressStream = new compressing.tgz.Stream();
@@ -58,21 +48,63 @@ exports.compressTvShow = function (inputPath) {
   })
 }
 
-exports.packagingPath = packagingPath;
-
 exports.removePackagedFile = function(inputPath) {
   fs.unlinkSync(packagingPath(inputPath));
 }
 
+exports.getExistingMoviesMap = function() {
+  console.log('getting...');
+  return mapDir(getMovieDir(), { extensions: /\.(mp4|mkv|avi)$/g });
+}
+
+exports.getExistingTvShowsMap = function() {
+  return mapDir(getTvDir(), { extensions: /\.(mp4|mkv|avi)$/g });
+}
+
+exports.packagingPath = packagingPath;
+exports.getPathFromHash = getPathFromHash;
+
+// ===========================================================================
+
+function getMovieDir() {
+  if (!MOVIE_DIR) { MOVIE_DIR = config.get('MOVIE_DIR') || '/movies'; }
+
+  if (!fs.existsSync(MOVIE_DIR)) {
+    // Try looking in relative path
+    if (fs.existsSync(`.${MOVIE_DIR}`)) {
+      MOVIE_DIR = `.${MOVIE_DIR}`
+    } else {
+      MOVIE_DIR = null;
+    }
+  }
+  return MOVIE_DIR;
+}
+
+function getTvDir() {
+  if (!TV_DIR) { TV_DIR = config.get('TV_DIR') || '/tv_shows'; }
+
+  if (!fs.existsSync(TV_DIR)) {
+    // Try looking in relative path
+    if (fs.existsSync(`.${TV_DIR}`)) {
+      TV_DIR = `.${TV_DIR}`
+    } else {
+      TV_DIR = null;
+    }
+  }
+  return TV_DIR;
+}
+
 function moviePath(relPath) {
-  return path.resolve(`${MOVIE_DIR}/${relPath}`);
+  return path.resolve(`${getMovieDir()}/${relPath}`);
 }
 
 function tvPath(relPath) {
-  return path.resolve(`${TV_DIR}/${relPath}`);
+  return path.resolve(`${getTvDir()}/${relPath}`);
 }
 
 function packagingPath(relPath) {
+  if (!PACKAGING_DIR) { PACKAGING_DIR = initPackagingPath(); }
+
   const fileName = `${path.parse(relPath).name}.tar`;
   return path.resolve(`${PACKAGING_DIR}/${fileName}`);
 }
@@ -87,4 +119,41 @@ function initPackagingPath() {
     fs.mkdirSync(tempPath);
   }
   return tempPath;
+}
+
+function filePathToHash(filePath) {
+  return encode(Buffer.from(filePath).toString('base64'));
+}
+
+function getPathFromHash(hash) {
+  return Buffer.from(hash, 'base64').toString('ascii');
+}
+
+// Options can contain a whitelisted list of file extensions expressed as a regex.
+function mapDir(dirPath, options = {}) {
+  return readDirAsync(dirPath).then(files => {
+    const dirMap = [];
+    const promises = [];
+    for (var i = 0; i < files.length; i++) {
+      const filePath = `${dirPath}/${files[i]}`;
+      const stats = fs.statSync(filePath);
+
+      if (options.extensions && stats.isFile() && !files[i].match(options.extensions)) {
+        continue;
+      }
+
+      const details = {
+        id: filePathToHash(path.relative(getMovieDir(), filePath)),
+        name: files[i],
+        isDir: stats.isDirectory(),
+        size: stats.size,
+        children: [],
+      };
+      if (details.isDir) {
+        promises.push(mapDir(filePath, options).then(map => { details.children = map; details.size = details.size  + sumBy(map, 'size')}));
+      }
+      dirMap.push(details);
+    }
+    return Promise.all(promises).then(() => dirMap);
+  });
 }

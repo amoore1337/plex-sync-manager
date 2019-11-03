@@ -1,7 +1,6 @@
 const server = require('./app/internal/app.js');
 const config = require('nconf');
 const winston = require('winston');
-const initKeys = require('./config/initializers/keys.init');
 
 // Load Environment variables from .env file
 require('dotenv').config();
@@ -32,5 +31,4 @@ winston.add(logger);
 
 logger.info('[APP] Starting server initialization');
 
-// Initialize Service:
-initKeys().then(() => server())
+server();
