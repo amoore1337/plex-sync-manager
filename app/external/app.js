@@ -49,14 +49,8 @@ module.exports = (callback) => {
     cert: global.CERT
   };
 
-  process.on('uncaughtException', function (exception) {
-    console.log(exception); // to see your exception details in the console
-    // if you are on production, maybe you can send the exception details to your
-    // email as well ?
-  });
-
   https.createServer(sslOptions, app).listen(NODE_PORT, () => {
     logger.info('[SERVER] Listening on port ' + NODE_PORT);
     if (callback) { return callback(); }
-  });
+  }).setTimeout(259200000); // Allow requests to take up to 3 days...
 };
