@@ -53,11 +53,11 @@ exports.removePackagedFile = function(inputPath) {
 }
 
 exports.getExistingMoviesMap = function() {
-  return mapDir(getMovieDir(), { extensions: /\.(mp4|mkv|avi)$/g, basePath: getMovieDir() });
+  return mapDir(getMovieDir(), { extensions: /\.(mp4|mkv|avi|m4v)$/g, basePath: getMovieDir() });
 }
 
 exports.getExistingTvShowsMap = function() {
-  return mapDir(getTvDir(), { extensions: /\.(mp4|mkv|avi)$/g, basePath: getTvDir() });
+  return mapDir(getTvDir(), { extensions: /\.(mp4|mkv|avi|m4v)$/g, basePath: getTvDir() });
 }
 
 exports.packagingPath = packagingPath;
