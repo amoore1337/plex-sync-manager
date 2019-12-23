@@ -11,7 +11,7 @@
               <v-text-field v-model="clientIp" label="Client IP" required></v-text-field>
               <v-btn style="top: -6px" type="submit">Submit</v-btn>
             </form> -->
-            TODO: Settings for configuring a new client...
+            <client-settings></client-settings>
           </v-sheet>
         </v-flex>
       </v-layout>
@@ -21,10 +21,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import ClientSettings from '@/components/ClientSettings.vue';
 import axios from 'axios';
 
 @Component({
-  components: {},
+  components: {
+    ClientSettings,
+  },
 })
 export default class Home extends Vue {
   private clientIp = '';
@@ -53,6 +56,7 @@ export default class Home extends Vue {
   justify-content: center;
   max-height: 675px;
   min-height: 375px;
+  padding: 15px;
 
   form {
     display: flex;

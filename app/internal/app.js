@@ -3,10 +3,11 @@ const bodyParser = require('body-parser');
 const config = require('nconf');
 const logger = require('winston');
 const expressWinston = require('express-winston');
+const { dbConnection, dbClose, runMigrations } = require('./db/db.helper');
 
 let app;
 
-module.exports = (callback) => {
+module.exports = async (callback) => {
   app = express();
 
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -26,6 +27,15 @@ module.exports = (callback) => {
     colorize: false,
     ignoreRoute: function (req, res) { return false; }
   }));
+
+  // Run any pending migrations when the app starts up:
+  try {
+    const db = await dbConnection();
+    await runMigrations(db);
+    await dbClose(db);
+  } catch (error) {
+    logger.error('Migrations failed: ', error);
+  }
 
   logger.info('[SERVER] Initializing routes');
   require('./routes/index')(app);

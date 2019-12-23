@@ -1,4 +1,4 @@
-const { wrapAsync } = require('../../services/router.service');
+const { wrapAsync, isAuthenticated } = require('../../services/router.service');
 const {
   compressMovie,
   compressTvShow,
@@ -10,7 +10,7 @@ const {
 // This probably isn't necessary, but to keep from broadcasting what content is being obtained,
 // we'll obfuscate the endpoints a little: m => movies, s => tv shows
 module.exports = (router) => {
-  router.post('/m', wrapAsync(async (req, res) => {
+  router.post('/m', isAuthenticated, wrapAsync(async (req, res) => {
     const filePath = getPathFromHash(req.body.token);
     if (!filePath) {
       return res.satus(404).send('Invalid identifier');
@@ -22,7 +22,7 @@ module.exports = (router) => {
     ).catch(err => res.status(err.httpCode || 500).send(err.message));
   }));
 
-  router.post('/s', wrapAsync(async (req, res) => {
+  router.post('/s', isAuthenticated, wrapAsync(async (req, res) => {
     const filePath = getPathFromHash(req.body.token);
     if (!filePath) {
       return res.satus(404).send('Invalid identifier');
