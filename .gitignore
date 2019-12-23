@@ -3,6 +3,7 @@ node_modules
 */dist
 /media
 /packaging
+/app/db/app.db
 
 # local env files
 .env.local
