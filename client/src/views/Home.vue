@@ -7,10 +7,6 @@
       <v-layout>
         <v-flex xs12>
           <v-sheet elevation="5" class="fill-height chip-container">
-            <!-- <form @submit.prevent="onSubmit" style="display: flex">
-              <v-text-field v-model="clientIp" label="Client IP" required></v-text-field>
-              <v-btn style="top: -6px" type="submit">Submit</v-btn>
-            </form> -->
             <client-settings></client-settings>
           </v-sheet>
         </v-flex>
